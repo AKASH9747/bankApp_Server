@@ -66,16 +66,20 @@ const jwtMiddleware = (req, res, next) => {
 // Bank app - API  
 // register - API
 app.post('/register', (req, res) => {
-    const result = dataService.register(req.body.acno, req.body.pswd, req.body.uname)
-    // we need to convert the result to json format because frontend read json format only
-    res.status(result.statusCode).json(result)
+    const result = dataService.register(req.body.acno, req.body.pswd, req.body.uname).then(result => {
+        // we need to convert the result to json format because frontend read json format only
+        res.status(result.statusCode).json(result)
+    })
+
 })
 
-// register - API
+// Login - API
 app.post('/login', (req, res) => {
-    const result = dataService.login(req.body.acno, req.body.pswd)
-    // we need to convert the result to json format because frontend read json format only
-    res.status(result.statusCode).json(result)
+    dataService.login(req.body.acno, req.body.pswd).then(result => {
+        // we need to convert the result to json format because frontend read json format only
+        res.status(result.statusCode).json(result)
+    })
+
 })
 
 // deposit - API

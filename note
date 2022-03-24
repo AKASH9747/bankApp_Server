@@ -1,5 +1,5 @@
 Server creation
-
+=================
 codes
 ===========
 
@@ -10,9 +10,11 @@ codes
 3. To run Server - node index.js
 (Changes are not automatically reflect in node so we need to recompile the application then go to browser and reload.This process is very difficult so we introduced new method nodemon(we not need recompile the server again and again))
 
-4. To install nodemon - npm i -g nodemon                  (-g means global)
+4. To install nodemon - npm i -g nodemon(-g means global)
 
-5. Install jsomwebtoken
+5. Install jsomwebtoken - npm i jsonwebtoken
+
+6. Install mongoose - npm i mongoose
 
 steps
 =========
@@ -49,3 +51,19 @@ Then import express to this file(Insted of express we are using require)
     12.1 Token generation - sign()
 
     12.2 Token validation - verify()    
+
+13. Db connection
+
+    13.1 Install mongoose
+
+    13.2 Import mongoose
+
+    13.3 Define connection string
+
+    13.4 Create model
+
+    13.5 export model
+
+14. Promice - To deal asynchronous events
+
+    14.1 then() - 

@@ -1,74 +1,76 @@
 // import jsonwebtoken
 const jwt = require('jsonwebtoken')
 
-database = {
-    1000: { acno: 1000, uname: "Akash", password: 2000, balance: 5000, transcation: [] },
-    1001: { acno: 1001, uname: "Najad", password: 1001, balance: 1000, transcation: [] },
-    1002: { acno: 1002, uname: "favas", password: 1002, balance: 2000, transcation: [] }
-}
+// Import Model
+
+const db = require('./db')
+
+// database = {
+//     1000: { acno: 1000, uname: "Akash", password: 2000, balance: 5000, transcation: [] },
+//     1001: { acno: 1001, uname: "Najad", password: 1001, balance: 1000, transcation: [] },
+//     1002: { acno: 1002, uname: "favas", password: 1002, balance: 2000, transcation: [] }
+// }
 
 // Register defination
 
 const register = (acno, pswd, uname) => {
-
-    if (acno in database) {
-        return {
-            statusCode: 422,
-            status: false,
-            message: "User already exist!!... Please login "
-        }
-    } else {
-        database[acno] = {
-            acno,
-            uname,
-            password: pswd,
-            balance: 0,
-            transcation: []
-        }
-        console.log(database);
-
-        return {
-            statusCode: 200,
-            status: true,
-            message: "Successfully Registered"
-        }
-    }
+    // Asynchronous
+    return db.User.findOne({ acno })
+        .then(user => {
+            if (user) {
+                return {
+                    statusCode: 422,
+                    status: false,
+                    message: "User already exist!!... Please login "
+                }
+            } else {
+                const newUser = new db.User({
+                    acno,
+                    uname,
+                    password: pswd,
+                    balance: 0,
+                    transcation: []
+                })
+                newUser.save()
+                return {
+                    statusCode: 200,
+                    status: true,
+                    message: "Successfully Registered"
+                }
+            }
+        })
 }
 
 // Login defination
 const login = (acno, password) => {
+    return db.User.findOne({ acno, password })
+        .then(user => {
+            if (user) {
+                currentAcno = acno
+                currentUserName = user.uname
+                // token generation
+                const token = jwt.sign({
+                    currentAcno: acno
+                }, 'scret123')
+                console.log(token);
+                return {
+                    statusCode: 200,
+                    status: true,
+                    message: "Successfully Log In",
+                    currentAcno,
+                    currentUserName,
+                    token
+                }
+            } else {
+                return {
+                    statusCode: 422,
+                    status: false,
+                    message: "Incorrect Password/Account Number"
+                }
+            }
+        })
 
-    if (acno in database) {
-        if (password == database[acno]["password"]) {
-            currentAcno = acno
-            currentUserName = database[acno]["uname"]
-            // token generation
-            const token = jwt.sign({
-                currentAcno: acno
-            }, 'scret123')
-            console.log(token);
-            return {
-                statusCode: 200,
-                status: true,
-                message: "Successfully Log In",
-                currentAcno,
-                currentUserName,
-                token
-            }
-        } else {
-            return {
-                statusCode: 422,
-                status: false,
-                message: "incorrect password"
-            }
-        }
-    } else {
-        return {
-            statusCode: 422,
-            status: false,
-            message: "Account number does not exist"
-        }
-    }
+
 }
 
 // Deposit definition
