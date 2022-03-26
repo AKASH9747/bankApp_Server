@@ -76,105 +76,97 @@ const login = (acno, password) => {
 // Deposit definition
 const deposit = (acno, pswd, amount) => {
     let amt = parseInt(amount)
-
-    if (acno in database) {
-        if (pswd == database[acno]["password"]) {
-            database[acno]["balance"] += amt
-            database[acno]["transcation"].push({
-                amt: amt,
-                type: "CREDIT"
-            })
-            return {
-                statusCode: 200,
-                status: true,
-                message: amount + " is Successfully deposited.. new balance is " + database[acno]["balance"]
+    // asynchronous
+    return db.User.findOne({ acno, password: pswd })
+        .then(user => {
+            if (user) {
+                user.balance += amt
+                user.transcation.push({
+                    amt: amt,
+                    type: "CREDIT"
+                })
+                user.save()
+                return {
+                    statusCode: 200,
+                    status: true,
+                    message: amount + " is Successfully deposited.. new balance is " + user.balance
+                }
+            } else {
+                return {
+                    statusCode: 422,
+                    status: false,
+                    message: "Incorrect Password/Account Number"
+                }
             }
-
-        } else {
-            return {
-                statusCode: 422,
-                status: false,
-                message: "Incorrect password"
-            }
-        }
-    } else {
-        return {
-            statusCode: 422,
-            status: false,
-            message: "User does not exist"
-        }
-
-    }
+        })
 }
 //  withdraw definition
 const withdraw = (req, acno, pswd, amount) => {
 
     let amt = parseInt(amount)
     var currentAcno = req.currentAcno
-    if (acno in database) {
-        if (pswd == database[acno]["password"]) {
-            if (currentAcno == acno) {
-                if (database[acno]["balance"] > amt) {
-                    database[acno]["balance"] -= amount
-                    database[acno]["transcation"].push({
+    return db.User.findOne({ acno, password: pswd })
+        .then(user => {
+            if (user) {
+                if (currentAcno != acno) {
+                    return {
+                        statusCode: 422,
+                        status: false,
+                        message: "Operation denied.."
+                    }
+                }
+                if (user.balance > amt) {
+                    user.balance -= amt
+                    user.transcation.push({
                         amt: amount,
                         type: "DEBIT"
                     })
-                    // console.log(database[acno]["transcation"]);
-                    console.log(database);
+                    user.save()
                     return {
                         statusCode: 200,
                         status: true,
-                        message: amount + " is Successfully debited.. new balance is " + database[acno]["balance"]
+                        message: amt + " is Successfully debited.. new balance is " + user.balance
                     }
                 } else {
                     return {
                         statusCode: 422,
                         status: false,
-                        message: "Insufficent Balance.."
+                        message: "Insufficent balance"
                     }
+                }
+            }
+            else {
+                return {
+                    statusCode: 422,
+                    status: false,
+                    message: "Incorrect Password/Account Number"
+                }
+            }
+        })
+}
+
+
+// Transcation definition
+const getTranscation = (acno) => {
+
+    // Asynchronous
+    return db.User.findOne({ acno })
+        .then(user => {
+            if (user) {
+                return {
+                    statusCode: 200,
+                    status: true,
+                    transcation: user.transcation
                 }
             } else {
                 return {
                     statusCode: 422,
                     status: false,
-                    message: "Operation denied.."
+                    message: "User does not exist"
                 }
-
             }
+        })
 
-        } else {
-            return {
-                statusCode: 422,
-                status: false,
-                message: "Incorrect password"
-            }
-        }
-    } else {
-        return {
-            statusCode: 422,
-            status: false,
-            message: "User does not exist"
-        }
-
-    }
-}
-
-// Transcation definition
-const getTranscation = (acno) => {
-    if (acno in database) {
-        return {
-            statusCode: 200,
-            status: true,
-            transcation: database[acno]["transcation"]
-        }
-    } else {
-        return {
-            statusCode: 422,
-            status: false,
-            message: "User does not exist"
-        }
-    }
 }
 
 // In nodeJs we are not using class concept so we are exporting functions here 

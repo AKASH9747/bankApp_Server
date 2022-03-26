@@ -6,8 +6,16 @@ const express = require('express')
 
 const dataService = require('./Services/data.service')
 
+// Import cors
+const cors = require('cors')
+
 // create an application using express
 const app = express()
+
+// Use cors to specify origin
+app.use(cors({
+    origin: 'http://localhost:4200'
+}))
 
 // To parse json
 app.use(express.json())
@@ -66,7 +74,7 @@ const jwtMiddleware = (req, res, next) => {
 // Bank app - API  
 // register - API
 app.post('/register', (req, res) => {
-    const result = dataService.register(req.body.acno, req.body.pswd, req.body.uname).then(result => {
+    dataService.register(req.body.acno, req.body.pswd, req.body.uname).then(result => {
         // we need to convert the result to json format because frontend read json format only
         res.status(result.statusCode).json(result)
     })
@@ -84,22 +92,25 @@ app.post('/login', (req, res) => {
 
 // deposit - API
 app.post('/deposit', jwtMiddleware, (req, res) => {
-    const result = dataService.deposit(req.body.acno, req.body.pswd, req.body.amount)
-    // we need to convert the result to json format because frontend read json format only
-    res.status(result.statusCode).json(result)
+    // asynchronous
+    dataService.deposit(req.body.acno, req.body.pswd, req.body.amount)
+        .then(result => { res.status(result.statusCode).json(result) })
+
 })
 // Withdraw - API
 app.post('/withdraw', jwtMiddleware, (req, res) => {
-    const result = dataService.withdraw(req, req.body.acno, req.body.pswd, req.body.amount)
-    // we need to convert the result to json format because frontend read json format only
-    res.status(result.statusCode).json(result)
+    dataService.withdraw(req, req.body.acno, req.body.pswd, req.body.amount)
+        .then(result => {
+            res.status(result.statusCode).json(result)
+        })
 })
 
 // transcation - API
 app.post('/transcation', jwtMiddleware, (req, res) => {
-    const result = dataService.getTranscation(req.body.acno)
-    // we need to convert the result to json format because frontend read json format only
-    res.status(result.statusCode).json(result)
+    dataService.getTranscation(req.body.acno)
+        .then(result => {
+            res.status(result.statusCode).json(result)
+        })
 })
 
 // set up the port number

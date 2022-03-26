@@ -16,6 +16,8 @@ codes
 
 6. Install mongoose - npm i mongoose
 
+7. Install corse - npm i cors
+
 steps
 =========
 
@@ -67,3 +69,13 @@ Then import express to this file(Insted of express we are using require)
 14. Promice - To deal asynchronous events
 
     14.1 then() - 
+
+    1422 catch() -
+
+15. Corse - cross origin resourse sharing
+
+    15.1 install cors
+
+    15.2 Import to Index.js
+
+    15.3 
