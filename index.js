@@ -22,36 +22,36 @@ app.use(express.json())
 
 // Resolve http req from client
 // GET to read data
-app.get('/', (req, res) => {
-    res.send("IT'S A GET METHOD Hoiiiii Uricaa.....")
-})
+// app.get('/', (req, res) => {
+//     res.send("IT'S A GET METHOD Hoiiiii Uricaa.....")
+// })
 
 // PUT to update/modify data
-app.put('/', (req, res) => {
-    res.send("IT'S A PUT METHOD Yoo..")
-})
+// app.put('/', (req, res) => {
+//     res.send("IT'S A PUT METHOD Yoo..")
+// })
 
 // POST to create  data
-app.post('/', (req, res) => {
-    res.send("IT'S A POST METHOD Ha Ha...")
-})
+// app.post('/', (req, res) => {
+//     res.send("IT'S A POST METHOD Ha Ha...")
+// })
 
 // PATCH to update partially data
-app.patch('/', (req, res) => {
-    res.send("IT'S A PATCH METHOD Koii...")
-})
+// app.patch('/', (req, res) => {
+//     res.send("IT'S A PATCH METHOD Koii...")
+// })
 
 // DELETE to delete data
-app.delete('/', (req, res) => {
-    res.send("IT'S A DELETE METHOD lalala...")
-})
+// app.delete('/', (req, res) => {
+//     res.send("IT'S A DELETE METHOD lalala...")
+// })
 
 // Application specific Middleware
-const appMiddleware = (req, res, next) => {
-    console.log("Application specific middleware");
-    next();
-}
-app.use(appMiddleware)
+// const appMiddleware = (req, res, next) => {
+//     console.log("Application specific middleware");
+//     next();
+// }
+// app.use(appMiddleware)
 
 // to verify token - middleware
 const jwtMiddleware = (req, res, next) => {
@@ -111,6 +111,14 @@ app.post('/transcation', jwtMiddleware, (req, res) => {
         .then(result => {
             res.status(result.statusCode).json(result)
         })
+})
+
+// deleteAcc - API
+app.delete('/deleteAcc/:acno', jwtMiddleware, (req, res) => {
+    dataService.deleteAcc(req.params.acno)
+        .then(result => {
+            res.status(result.statusCode).json(result)
+    })
 })
 
 // set up the port number
